@@ -1,0 +1,18 @@
+import os
+
+import vertexai
+
+GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT", "my-gcp-project")
+GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+
+client = vertexai.Client(
+  project=GOOGLE_CLOUD_PROJECT,
+  location=GOOGLE_CLOUD_LOCATION
+)
+
+# If you don't have an Agent Engine instance already, create an instance.
+agent_engine = client.agent_engines.create()
+
+# Print the agent engine ID, you will need it in the later steps to initialize
+# the ADK `VertexAiSessionService`.
+print(agent_engine.api_resource.name)
