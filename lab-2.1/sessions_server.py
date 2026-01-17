@@ -199,73 +199,94 @@ async def chat(request: dict):
         accumulated_text = ""
         event_index = 0
 
-        # Send initial session card (turn 0) before agent starts
-        initial_session_card = build_session_card_data(session)
-        yield f"data: {json.dumps(initial_session_card)}\n\n"
+        try:
+            # Send initial session card (turn 0) before agent starts
+            initial_session_card = build_session_card_data(session)
+            yield f"data: {json.dumps(initial_session_card)}\n\n"
 
-        # Run the agent using run_async - it returns a generator of events
-        async for event in runner.run_async(
-            user_id=user_id,
-            session_id=session_id,
-            new_message=user_message,
-            run_config=RunConfig(
-                streaming_mode=StreamingMode.SSE
+            # Run the agent using run_async - it returns a generator of events
+            async for event in runner.run_async(
+                user_id=user_id,
+                session_id=session_id,
+                new_message=user_message,
+                run_config=RunConfig(
+                    streaming_mode=StreamingMode.SSE
+                )
+            ):
+                event_index += 1
+
+                # Stream text chunks as they become available
+                # ADK emits chunks in separate events - each event contains new text
+                if event.content and event.content.parts and event.partial:
+                    for part in event.content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            # Each event contains the new chunk of text
+                            chunk_text = part.text
+                            accumulated_text += chunk_text
+
+                            # Send this chunk immediately
+                            chunk_data = {
+                                "type": "response_chunk",
+                                "text": chunk_text,
+                                "is_final": False
+                            }
+                            yield f"data: {json.dumps(chunk_data)}\n\n"
+
+                # Check if this is the final response
+                if event.is_final_response():
+                    break
+
+            
+            # Get final session state
+            updated_session = await session_service.get_session(
+                app_name=APP_NAME,
+                user_id=user_id,
+                session_id=session_id
             )
-        ):
-            event_index += 1
 
-            # Stream text chunks as they become available
-            # ADK emits chunks in separate events - each event contains new text
-            if event.content and event.content.parts and event.partial:
-                for part in event.content.parts:
-                    if hasattr(part, 'text') and part.text:
-                        # Each event contains the new chunk of text
-                        chunk_text = part.text
-                        accumulated_text += chunk_text
+            # Send final session card update after all events are processed
+            final_session_card = build_session_card_data(updated_session)
+            yield f"data: {json.dumps(final_session_card)}\n\n"
 
-                        # Send this chunk immediately
-                        chunk_data = {
-                            "type": "response_chunk",
-                            "text": chunk_text,
-                            "is_final": False
-                        }
-                        yield f"data: {json.dumps(chunk_data)}\n\n"
+            # Prepare session summary
+            # updated_session = session
+            session_summary = build_session_summary(updated_session)
 
-            # Check if this is the final response
-            if event.is_final_response():
-                break
+            # If no text was accumulated, send an error
+            if not accumulated_text:
+                logger.error("Agent pipeline did not produce any text response")
+                for error_event in yield_error_response("Agent pipeline did not produce any text response."):
+                    yield error_event
+                return
 
-        
-        # Get final session state
-        updated_session = await session_service.get_session(
-            app_name=APP_NAME,
-            user_id=user_id,
-            session_id=session_id
-        )
-
-        # Send final session card update after all events are processed
-        final_session_card = build_session_card_data(updated_session)
-        yield f"data: {json.dumps(final_session_card)}\n\n"
-
-        # Prepare session summary
-        # updated_session = session
-        session_summary = build_session_summary(updated_session)
-
-        # If no text was accumulated, send an error
-        if not accumulated_text:
-            logger.error("Agent pipeline did not produce any text response")
-            for error_event in yield_error_response("Agent pipeline did not produce any text response."):
-                yield error_event
-            return
-
-        # Send final completion event
-        completion_data = {
-            "type": "response_chunk",
-            "text": "",
-            "is_final": True,
-            "session": session_summary
-        }
-        yield f"data: {json.dumps(completion_data)}\n\n"
+            # Send final completion event
+            completion_data = {
+                "type": "response_chunk",
+                "text": "",
+                "is_final": True,
+                "session": session_summary
+            }
+            yield f"data: {json.dumps(completion_data)}\n\n"
+            
+        except Exception as e:
+            # Log the error with full traceback
+            logger.error(f"Error during agent execution: {str(e)}", exc_info=True)
+            
+            # Send error event to client
+            error_data = {
+                "type": "error",
+                "message": f"Agent execution failed: {str(e)}"
+            }
+            yield f"data: {json.dumps(error_data)}\n\n"
+            
+            # Send completion event to unblock the client
+            completion_data = {
+                "type": "response_chunk",
+                "text": "",
+                "is_final": True,
+                "error": True
+            }
+            yield f"data: {json.dumps(completion_data)}\n\n"
 
     return StreamingResponse(
         event_generator(),

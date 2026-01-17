@@ -166,10 +166,15 @@ def clean_json_response(text: str) -> str:
     return text.strip()
 
 
-def create_event_summary(event, event_index):
+def create_event_summary(event, event_index, summary_length=50):
     """
     Create a comprehensive summary of an ADK event including tool calls and responses.
     Returns a dictionary suitable for client display.
+    
+    Args:
+        event: The ADK event object to summarize
+        event_index: The index of the event in the session
+        summary_length: Optional length for text preview (default: 50)
     """
     event_summary = {
         "index": event_index,
@@ -214,7 +219,7 @@ def create_event_summary(event, event_index):
         if hasattr(event.content, "parts") and event.content.parts:
             for part in event.content.parts:
                 if hasattr(part, "text") and part.text:
-                    text_preview = part.text[:50] if len(part.text) > 50 else part.text
+                    text_preview = part.text[:summary_length] if len(part.text) > summary_length else part.text
                     event_summary["text_preview"] = text_preview
                     event_summary["text_length"] = len(part.text)
                     break
@@ -445,13 +450,14 @@ def generate_home_page_html(client_url: str) -> str:
                 This server provides the agent API endpoints. To interact with the agent, 
                 please click the button below to open the client application.
             </p>
-            <a href="{client_url}" target="_blank" id="clientButton" class="button" style="pointer-events: none; background-color: #ccc;">
+            <a href="{client_url}" target="_blank" id="clientButton" class="button">
                 Open Client Application
             </a>
-            <span id="countdown" class="countdown">Ready in 20 seconds...</span>
+            <!-- <span id="countdown" class="countdown">Ready in 20 seconds...</span> -->
         </div>
         
         <script>
+            /* COUNTDOWN TIMER DISABLED - uncomment to re-enable
             let timeRemaining = 20;
             const button = document.getElementById('clientButton');
             const countdownDisplay = document.getElementById('countdown');
@@ -470,6 +476,7 @@ def generate_home_page_html(client_url: str) -> str:
             
             // Start countdown when page loads
             updateCountdown();
+            */
         </script>
     </body>
     </html>
