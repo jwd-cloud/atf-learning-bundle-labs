@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import sys
+import time
 
 from agent_sessions import root_agent
 from dotenv import load_dotenv
@@ -34,6 +35,67 @@ load_dotenv()
 configure_logging()
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# HTTP Request Timing (Debugging)
+# ============================================================================
+
+import httpx
+
+# Create dedicated logger for HTTP timing (no propagation to avoid duplicates)
+http_timing_logger = logging.getLogger("http_timing")
+http_timing_logger.setLevel(logging.INFO)
+http_timing_logger.propagate = False
+# Clear any existing handlers to prevent duplicates on reload
+http_timing_logger.handlers.clear()
+http_timing_handler = logging.StreamHandler()
+http_timing_handler.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(message)s'))
+http_timing_logger.addHandler(http_timing_handler)
+
+# Store original send methods
+_original_sync_send = getattr(httpx.Client, '_original_send', None) or httpx.Client.send
+_original_async_send = getattr(httpx.AsyncClient, '_original_send', None) or httpx.AsyncClient.send
+
+def _timed_sync_send(self, request, **kwargs):
+    """Wrapper for httpx.Client.send that adds timing"""
+    start_time = time.time()
+    response = _original_sync_send(self, request, **kwargs)
+    duration = time.time() - start_time
+    log_data = {
+        "type": "http_request",
+        "method": request.method,
+        "url": str(request.url),
+        "status_code": response.status_code,
+        "duration_seconds": round(duration, 3)
+    }
+    http_timing_logger.info(f"HTTP Request:\n{json.dumps(log_data, indent=2)}")
+    return response
+
+async def _timed_async_send(self, request, **kwargs):
+    """Wrapper for httpx.AsyncClient.send that adds timing"""
+    start_time = time.time()
+    response = await _original_async_send(self, request, **kwargs)
+    duration = time.time() - start_time
+    log_data = {
+        "type": "http_request",
+        "method": request.method,
+        "url": str(request.url),
+        "status_code": response.status_code,
+        "duration_seconds": round(duration, 3)
+    }
+    http_timing_logger.info(f"HTTP Request:\n{json.dumps(log_data, indent=2)}")
+    return response
+
+# Monkey-patch httpx clients (only if not already patched)
+if not hasattr(httpx.Client, '_original_send'):
+    httpx.Client._original_send = httpx.Client.send
+    httpx.Client.send = _timed_sync_send
+if not hasattr(httpx.AsyncClient, '_original_send'):
+    httpx.AsyncClient._original_send = httpx.AsyncClient.send
+    httpx.AsyncClient.send = _timed_async_send
+
+# Disable httpx's default INFO logging to avoid duplicates
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 # ============================================================================
 # Read Configuration
@@ -57,6 +119,9 @@ if SESSION_SERVICE_PROVIDER == "in_memory":
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 elif SESSION_SERVICE_PROVIDER == "vertex":
     # STUDENT TASK: Implement VertexSessionService
+    from google.adk.sessions import VertexAiSessionService
+    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=AGENT_ENGINE_LOCATION)
+    APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")  
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 elif SESSION_SERVICE_PROVIDER == "db":
     # STUDENT TASK: Implement DatabaseSessionService
@@ -103,12 +168,15 @@ async def get_or_create_session(user_id: str, session_id: str | None = None):
     """Get existing session or create new one. Returns (session, session_id)."""
     if not session_id:
         logger.info(f"No session ID provided, creating new session for user {user_id}")
+        start_time = time.perf_counter()
         session = await session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,
             state={}
         )
         session_id = session.id
+        elapsed_time = time.perf_counter() - start_time
+        logger.info(f"Session creation completed in {elapsed_time:.4f} seconds")
     else:
         session = await session_service.get_session(
             app_name=APP_NAME,
@@ -167,11 +235,14 @@ def yield_error_response(message):
 @app.post("/sessions")
 async def create_session(request: dict):
     """Create a new session for a user."""
+    start_time = time.perf_counter()
     session = await session_service.create_session(
         app_name=APP_NAME,
         user_id=request["user_id"],
         state=request.get("initial_state", {})
     )
+    elapsed_time = time.perf_counter() - start_time
+    logger.info(f"/sessions endpoint: Session creation completed in {elapsed_time:.4f} seconds")
     
     # Return full session card data so client can display it immediately
     return {
@@ -205,6 +276,7 @@ async def chat(request: dict):
             yield f"data: {json.dumps(initial_session_card)}\n\n"
 
             # Run the agent using run_async - it returns a generator of events
+            loop_start_time = time.perf_counter()
             async for event in runner.run_async(
                 user_id=user_id,
                 session_id=session_id,
@@ -236,13 +308,18 @@ async def chat(request: dict):
                 if event.is_final_response():
                     break
 
+            loop_elapsed_time = time.perf_counter() - loop_start_time
+            logger.info(f"runner.run_async enumeration loop completed in {loop_elapsed_time:.4f} seconds")
             
             # Get final session state
+            session_get_start_time = time.perf_counter()
             updated_session = await session_service.get_session(
                 app_name=APP_NAME,
                 user_id=user_id,
                 session_id=session_id
             )
+            session_get_elapsed_time = time.perf_counter() - session_get_start_time
+            logger.info(f"Updated session get completed in {session_get_elapsed_time:.4f} seconds")
 
             # Send final session card update after all events are processed
             final_session_card = build_session_card_data(updated_session)
