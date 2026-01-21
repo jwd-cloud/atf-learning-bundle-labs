@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import sys
+import time
 
 from agent_sessions import root_agent
 from dotenv import load_dotenv
@@ -57,6 +58,9 @@ if SESSION_SERVICE_PROVIDER == "in_memory":
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 elif SESSION_SERVICE_PROVIDER == "vertex":
     # STUDENT TASK: Implement VertexSessionService
+    from google.adk.sessions import VertexAiSessionService
+    session_service = VertexAiSessionService(project=GOOGLE_CLOUD_PROJECT, location=AGENT_ENGINE_LOCATION)
+    APP_NAME = os.getenv("REASONING_ENGINE_APP_NAME", "reasoning_engine_app")  
     logger.info(f"Using SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
 elif SESSION_SERVICE_PROVIDER == "db":
     # STUDENT TASK: Implement DatabaseSessionService
@@ -103,12 +107,15 @@ async def get_or_create_session(user_id: str, session_id: str | None = None):
     """Get existing session or create new one. Returns (session, session_id)."""
     if not session_id:
         logger.info(f"No session ID provided, creating new session for user {user_id}")
+        start_time = time.perf_counter()
         session = await session_service.create_session(
             app_name=APP_NAME,
             user_id=user_id,
             state={}
         )
         session_id = session.id
+        elapsed_time = time.perf_counter() - start_time
+        logger.info(f"Session creation completed in {elapsed_time:.4f} seconds")
     else:
         session = await session_service.get_session(
             app_name=APP_NAME,
@@ -167,11 +174,14 @@ def yield_error_response(message):
 @app.post("/sessions")
 async def create_session(request: dict):
     """Create a new session for a user."""
+    start_time = time.perf_counter()
     session = await session_service.create_session(
         app_name=APP_NAME,
         user_id=request["user_id"],
         state=request.get("initial_state", {})
     )
+    elapsed_time = time.perf_counter() - start_time
+    logger.info(f"/sessions endpoint: Session creation completed in {elapsed_time:.4f} seconds")
     
     # Return full session card data so client can display it immediately
     return {
@@ -205,6 +215,7 @@ async def chat(request: dict):
             yield f"data: {json.dumps(initial_session_card)}\n\n"
 
             # Run the agent using run_async - it returns a generator of events
+            loop_start_time = time.perf_counter()
             async for event in runner.run_async(
                 user_id=user_id,
                 session_id=session_id,
@@ -236,13 +247,18 @@ async def chat(request: dict):
                 if event.is_final_response():
                     break
 
+            loop_elapsed_time = time.perf_counter() - loop_start_time
+            logger.info(f"runner.run_async enumeration loop completed in {loop_elapsed_time:.4f} seconds")
             
             # Get final session state
+            session_get_start_time = time.perf_counter()
             updated_session = await session_service.get_session(
                 app_name=APP_NAME,
                 user_id=user_id,
                 session_id=session_id
             )
+            session_get_elapsed_time = time.perf_counter() - session_get_start_time
+            logger.info(f"Updated session get completed in {session_get_elapsed_time:.4f} seconds")
 
             # Send final session card update after all events are processed
             final_session_card = build_session_card_data(updated_session)
