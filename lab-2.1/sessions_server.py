@@ -35,6 +35,67 @@ load_dotenv()
 configure_logging()
 logger = logging.getLogger(__name__)
 
+# ============================================================================
+# HTTP Request Timing (Debugging)
+# ============================================================================
+
+import httpx
+
+# Create dedicated logger for HTTP timing (no propagation to avoid duplicates)
+http_timing_logger = logging.getLogger("http_timing")
+http_timing_logger.setLevel(logging.INFO)
+http_timing_logger.propagate = False
+# Clear any existing handlers to prevent duplicates on reload
+http_timing_logger.handlers.clear()
+http_timing_handler = logging.StreamHandler()
+http_timing_handler.setFormatter(logging.Formatter('%(levelname)s:%(name)s:%(message)s'))
+http_timing_logger.addHandler(http_timing_handler)
+
+# Store original send methods
+_original_sync_send = getattr(httpx.Client, '_original_send', None) or httpx.Client.send
+_original_async_send = getattr(httpx.AsyncClient, '_original_send', None) or httpx.AsyncClient.send
+
+def _timed_sync_send(self, request, **kwargs):
+    """Wrapper for httpx.Client.send that adds timing"""
+    start_time = time.time()
+    response = _original_sync_send(self, request, **kwargs)
+    duration = time.time() - start_time
+    log_data = {
+        "type": "http_request",
+        "method": request.method,
+        "url": str(request.url),
+        "status_code": response.status_code,
+        "duration_seconds": round(duration, 3)
+    }
+    http_timing_logger.info(f"HTTP Request:\n{json.dumps(log_data, indent=2)}")
+    return response
+
+async def _timed_async_send(self, request, **kwargs):
+    """Wrapper for httpx.AsyncClient.send that adds timing"""
+    start_time = time.time()
+    response = await _original_async_send(self, request, **kwargs)
+    duration = time.time() - start_time
+    log_data = {
+        "type": "http_request",
+        "method": request.method,
+        "url": str(request.url),
+        "status_code": response.status_code,
+        "duration_seconds": round(duration, 3)
+    }
+    http_timing_logger.info(f"HTTP Request:\n{json.dumps(log_data, indent=2)}")
+    return response
+
+# Monkey-patch httpx clients (only if not already patched)
+if not hasattr(httpx.Client, '_original_send'):
+    httpx.Client._original_send = httpx.Client.send
+    httpx.Client.send = _timed_sync_send
+if not hasattr(httpx.AsyncClient, '_original_send'):
+    httpx.AsyncClient._original_send = httpx.AsyncClient.send
+    httpx.AsyncClient.send = _timed_async_send
+
+# Disable httpx's default INFO logging to avoid duplicates
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 # ============================================================================
 # Read Configuration
