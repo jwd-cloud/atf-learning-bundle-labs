@@ -386,7 +386,7 @@ if __name__ == "__main__":
 
     # Run the FastAPI application using Uvicorn
     uvicorn.run(
-        "sessions_server:app",  # Import string format for reload to work
+        "sessions_server_mp:app",  # Import string format for reload to work
         host="0.0.0.0",
         port=8000,  # Different port to run alongside the original
         reload=True
