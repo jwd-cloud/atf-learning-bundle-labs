@@ -1,0 +1,141 @@
+mac studio; home office
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...soningEngines/3246018909450534912/sessions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....98002950144/operations/6526295560385724416 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:sessions_server:/sessions endpoint: Session creation completed in 3.1945 seconds
+INFO:     127.0.0.1:55091 - "POST /sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55157 - "OPTIONS /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55159 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/3538104998002950144:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/3538104998002950144:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 3.5676 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.8890 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:55347 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/3538104998002950144:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/3538104998002950144:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 3.5907 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/3538104998002950144/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/3538104998002950144 "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.8482 seconds
+
+e2-standard4 (cloud shell)
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...soningEngines/3246018909450534912/sessions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....97519390720/operations/1749946680582602752 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....97519390720/operations/1749946680582602752 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:sessions_server:/sessions endpoint: Session creation completed in 24.8483 seconds
+INFO:     127.0.0.1:50656 - "POST /sessions HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:37674 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8378348697519390720:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8378348697519390720:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 7.0764 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 5.4268 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:53674 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8378348697519390720:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8378348697519390720:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 7.1113 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8378348697519390720/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8378348697519390720 "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 5.5010 seconds
+
+n4-standard 8
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...soningEngines/3246018909450534912/sessions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....98450964480/operations/6047365887512543232 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....98450964480/operations/6047365887512543232 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:sessions_server:/sessions endpoint: Session creation completed in 3.6132 seconds
+INFO:     98.51.189.208:60354 - "POST /sessions HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:     98.51.189.208:60374 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8367089698450964480:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8367089698450964480:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 3.0447 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.6138 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:     98.51.189.208:60389 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8367089698450964480:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/8367089698450964480:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 3.0626 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/8367089698450964480 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/8367089698450964480/events "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.6040 seconds
+
+n4-standard-2
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...soningEngines/3246018909450534912/sessions "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....52749533184/operations/9219307400064925696 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....52749533184/operations/9219307400064925696 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:sessions_server:/sessions endpoint: Session creation completed in 6.0065 seconds
+INFO:     98.51.189.208:62263 - "POST /sessions HTTP/1.1" 200 OK
+INFO:     98.51.189.208:62298 - "OPTIONS /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:     98.51.189.208:62299 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 3.6280 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.7760 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:     98.51.189.208:62320 - "POST /chat HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+WARNING:google_genai.types:Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:google_adk.google.adk.models.google_llm:Sending out request, model: gemini-2.5-flas...d: GoogleLLMVariant.VERTEX_AI, stream: True
+INFO:httpx:HTTP Request: POST https://aiplatform.googleapis.com/v1beta1...5-flash-lite:streamGenerateContent?alt=sse "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: POST https://us-central1-aiplatform.googleapis...2/sessions/4689337652749533184:appendEvent "HTTP/1.1 200 OK"
+INFO:sessions_server:runner.run_async enumeration loop completed in 7.3696 seconds
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....8909450534912/sessions/4689337652749533184 "HTTP/1.1 200 OK"
+INFO:httpx:HTTP Request: GET https://us-central1-aiplatform.googleapis....534912/sessions/4689337652749533184/events "HTTP/1.1 200 OK"
+INFO:sessions_server:Updated session get completed in 0.7589 seconds
