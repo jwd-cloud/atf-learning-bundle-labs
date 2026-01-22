@@ -21,6 +21,9 @@ from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.runners import InMemoryRunner, Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from opentelemetry import trace
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.sdk.trace import TracerProvider, export
 from utilities import (clean_json_response, configure_logging,
                        create_event_summary, generate_home_page_html,
                        get_client_url, log_event, log_session)
@@ -33,7 +36,8 @@ load_dotenv()
 
 configure_logging()
 logger = logging.getLogger(__name__)
-
+logging.getLogger("opentelemetry.context").setLevel(logging.CRITICAL)
+logging.getLogger("opentelemetry.attributes").setLevel(logging.ERROR)
 
 # ============================================================================
 # Read Configuration
@@ -68,6 +72,18 @@ else:
     logger.error(f"Unsupported SESSION_SERVICE_PROVIDER: {SESSION_SERVICE_PROVIDER}")
     sys.exit(1)
 
+# ============================================================================
+# ADK Trace Setup
+# ============================================================================
+provider = TracerProvider()
+processor = export.BatchSpanProcessor(
+    CloudTraceSpanExporter(project_id=GOOGLE_CLOUD_PROJECT)
+)
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+
+# Get tracer for application-level spans
+tracer = trace.get_tracer(__name__)
 
 # ============================================================================
 # ADK Runner Setup
@@ -170,18 +186,28 @@ def yield_error_response(message):
 @app.post("/sessions")
 async def create_session(request: dict):
     """Create a new session for a user."""
-    session = await session_service.create_session(
-        app_name=APP_NAME,
-        user_id=request["user_id"],
-        state=request.get("initial_state", {})
-    )
-    
-    # Return full session card data so client can display it immediately
-    return {
-        "session_id": session.id,
-        "user_id": session.user_id,
-        "session_card": build_session_card_data(session)
-    }
+    with tracer.start_as_current_span("create_session_jwd") as span:
+        # Add custom attributes for better observability
+        span.set_attribute("user_id", request["user_id"])
+        span.set_attribute("app_name", APP_NAME)
+        span.set_attribute("has_initial_state", "initial_state" in request)
+        
+        session = await session_service.create_session(
+            app_name=APP_NAME,
+            user_id=request["user_id"],
+            state=request.get("initial_state", {})
+        )
+        
+        # Add result attributes
+        span.set_attribute("session_id", session.id)
+        span.set_attribute("events_count", len(session.events))
+        
+        # Return full session card data so client can display it immediately
+        return {
+            "session_id": session.id,
+            "user_id": session.user_id,
+            "session_card": build_session_card_data(session)
+        }
 
 
 @app.post("/chat")
@@ -206,6 +232,7 @@ async def chat(request: dict):
             # Send initial session card (turn 0) before agent starts
             initial_session_card = build_session_card_data(session)
             yield f"data: {json.dumps(initial_session_card)}\n\n"
+
 
             # Run the agent using run_async - it returns a generator of events
             async for event in runner.run_async(
@@ -241,11 +268,20 @@ async def chat(request: dict):
 
             
             # Get final session state
-            updated_session = await session_service.get_session(
-                app_name=APP_NAME,
-                user_id=user_id,
-                session_id=session_id
-            )
+            with tracer.start_as_current_span("get_final_session_jwd") as span:
+                span.set_attribute("user_id", user_id)
+                span.set_attribute("session_id", session_id)
+                span.set_attribute("app_name", APP_NAME)
+                
+                updated_session = await session_service.get_session(
+                    app_name=APP_NAME,
+                    user_id=user_id,
+                    session_id=session_id
+                )
+                
+                # Add result attributes
+                span.set_attribute("events_count", len(updated_session.events))
+                span.set_attribute("has_state", bool(updated_session.state))
 
             # Send final session card update after all events are processed
             final_session_card = build_session_card_data(updated_session)
