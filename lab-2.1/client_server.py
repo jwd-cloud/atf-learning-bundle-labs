@@ -15,4 +15,5 @@ class SingleFileHandler(BaseHTTPRequestHandler):
             self.send_error(404)
 
 if __name__ == '__main__':
+    print("🌐 Client server running")
     HTTPServer(('', 8080), SingleFileHandler).serve_forever()
